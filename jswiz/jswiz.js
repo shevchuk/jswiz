@@ -1,9 +1,6 @@
 /**
- * Created with JetBrains WebStorm.
- * User: mico
- * Date: 31.12.12
- * Time: 21:45
- * To change this template use File | Settings | File Templates.
+ * @author: Mikhail Shevchuk
+ * @description: jswiz is a skeleton for a wizard
  */
 
 function Wiz(name)
@@ -15,134 +12,106 @@ function Wiz(name)
     this._currentStep = 0;
 }
 
-Wiz.prototype.toString = function ()
-{
-    var res = 'Name: ' + this.wizName + '\n';
-    res += 'Steps: \n';
-    for (var i=0; i<this.wizSteps.length; i++)
-    {
-        res += i + ' step: ' + this.wizSteps[i].wizName + '\n';
-    }
-    return res;
-};
 
-Wiz.prototype.getStorage = function()
-{
-    return this.wizStorage;
-};
-
-Wiz.prototype.addStep = function(step)
-{
-    this.wizSteps.push(step);
-};
-
-Wiz.prototype.next = function()
-{
-    // out of steps
-    if (this._currentStep == this.wizSteps.length-1) return;
-
-    // store current step
-    var prevStep = this.wizSteps[this._currentStep];
-
-    // go to next step
-    this._currentStep ++;
-    var nextStep = this.wizSteps[this._currentStep];
-
-    // save result into storage
-    mixin(prevStep.out(), this.wizStorage);
-
-    function mixin(src, dst) {
-        for (var k in src) {
-            if (src.hasOwnProperty(k)) {
-                dst[k] = src[k];
-            }
+Wiz.prototype = {
+    toString: function () {
+        var res = 'Name: ' + this.wizName + '\n';
+        res += 'Steps: \n';
+        for (var i=0; i<this.wizSteps.length; i++)
+        {
+            res += i + ' step: ' + this.wizSteps[i].wizName + '\n';
         }
-        return dst;
-    };
+        return res;
+    },
 
-    // pass result to the next step
-    prevStep.beforeExit && prevStep.beforeExit;
+    getStorage: function() {
+        return this.wizStorage;
+    },
 
-    nextStep.in(prevStep.out());
+    addStep: function(step) {
+        this.wizSteps.push(step);
+    },
 
-    return this.wizSteps[this._currentStep];
-};
+    start: function() {
+        this._currentStep = 0;
 
-Wiz.prototype.mixin = function(destination) {
-    for (var k in this) {
-        destination[k] = this[k];
+        var currentStep = this.wizSteps[this._currentStep];
+        currentStep.enterStep();
+    },
+
+    next: function() {
+        // store current step
+        var prevStep = this.wizSteps[this._currentStep];
+
+        // pass result to the next step
+        prevStep.beforeExit && prevStep.beforeExit();
+
+        // save result into storage
+        extend(prevStep.getValues(), this.wizStorage);
+
+        // out of steps
+        if (this._currentStep == this.wizSteps.length-1) return;
+
+        if (prevStep.getValues == undefined) {
+            throw "getValues function is not defined";
+            return;
+        }
+
+        // go to next step
+        this._currentStep ++;
+        var nextStep = this.wizSteps[this._currentStep];
+
+        function extend(src, dst) {
+            for (var k in src) {
+                if (src.hasOwnProperty(k)) {
+                    dst[k] = src[k];
+                }
+            }
+            return dst;
+        };
+
+        nextStep.enterStep(prevStep.getValues());
+
+        return this.wizSteps[this._currentStep];
+    },
+
+    extend: function(destination) {
+        for (var k in this) {
+            destination[k] = this[k];
+        }
+        return destination;
     }
-    return destination;
 };
 
-
-function WizStep(name, onEnter, beforeExit)
+function WizStep(config)
 {
-    this.wizName = name || 'Unnamed';
-    this.onEnter = onEnter;
-    this.beforeExit = beforeExit;
+    var config = config || {name: 'Unnamed'};
+
+    this.wizName = config.name;
+    if (config.getValues == undefined) {
+        throw "getValues is mandatory, should be a function that returns an object with keys, values";
+    }
+    this.getValues = config.getValues;
+    this.onEnter = config.onEnter;
+    this.beforeExit = config.beforeExit;
 
     this.input = null;
 }
 
-WizStep.prototype.toString = function()
-{
-    return 'Step: ' + this.wizName;
-};
+WizStep.prototype = {
+    toString:function() {
+        return 'Step: ' + this.wizName;
+    },
+    enterStep: function(param) {
+        this.input = param;
 
-WizStep.prototype.in = function(param)
-{
-    this.input = param;
-    console.log(this.toString() + '\n' + this.input);
-
-    // call onEnter hook
-    this.onEnter && this.onEnter();
-};
-
-WizStep.prototype.out = function()
-{
-    // to override
-};
-
-WizStep.prototype.mixin = function(destination) {
-    for (var k in this) {
-        destination[k] = this[k];
+        // call onEnter hook
+        this.onEnter && this.onEnter(param);
+    },
+    extend: function(destination) {
+        for (var k in this) {
+            destination[k] = this[k];
+        }
+        return destination;
     }
-    return destination;
 };
-
-
-function mockWiz()
-{
-    var step1 = new WizStep('enter name');
-
-    step1.out = function()
-    {
-        return {name: 'hello'};
-    };
-
-    var step2 = new WizStep('emailEnter');
-
-    var screen2 = {
-      getEmail: function () {return 'nwe@k.cc'}
-    };
-
-    step2.mixin(screen2);
-
-    screen2.out = function()
-    {
-        return {email: 'sdi@id.com',
-                email2: 'kjdf@jdkfs.com',
-                email3: this.getEmail()};
-    };
-
-    var step3 = new WizStep('confirm');
-
-    var w = new Wiz('addUser');
-    w.addStep(step1);
-    w.addStep(screen2);
-    w.addStep(step3);
-    return w;
-}
-
-var addUser = new Wiz('addUser');
