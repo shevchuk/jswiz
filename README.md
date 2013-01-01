@@ -3,7 +3,7 @@
 It doesn't contain any UI or dependencies
 
 <pre>
-var stubFormResult = {
+    var stubFormResult = {
         firstName: 'Ivan',
         secondName: 'Sidorov',
         email: 'ivan@sidorov.ru'
@@ -47,3 +47,24 @@ var stubFormResult = {
                                     confirmed: true}
 </pre>
 
+## Wiz
+
+In real world, you need to mixin wizard step into your wizard form:
+
+<pre>
+    var form = {
+        getEmail:function () {
+            return 'ivan@sidorov.ru'
+        }
+    };
+
+    var addUserStep = new WizStep({
+            name: 'addUserStep',
+            getValues: function() {
+                return {email: this.getEmail()};
+            }
+    });
+
+    addUserStep.extend(form);
+
+</pre>
