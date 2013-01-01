@@ -3,15 +3,16 @@
  * @description: jswiz is a skeleton for a wizard
  */
 
-function Wiz(name)
+function Wiz(config)
 {
-    this.wizName = name;
+    this.config = config;
+    this.wizName = config.name;
     this.wizSteps = [];
     this.wizStorage = {};
 
-    this._currentStep = 0;
+    this._currentStepNumber = 0;
+    this._currentStep;
 }
-
 
 Wiz.prototype = {
     toString: function () {
@@ -19,9 +20,22 @@ Wiz.prototype = {
         res += 'Steps: \n';
         for (var i=0; i<this.wizSteps.length; i++)
         {
-            res += i + ' step: ' + this.wizSteps[i].wizName + '\n';
+            res += i + ' step: ' + this.wizSteps[i].stepName + '\n';
         }
         return res;
+    },
+
+    getStepByName: function(name) {
+        for (var i=0; this.wizSteps.length; i++)
+        {
+            if (this.wizSteps[i].stepName == name) {
+                return this.wizSteps[i];
+            }
+        }
+    },
+
+    getCurrentStep: function() {
+        return this._currentStep;
     },
 
     getStorage: function() {
@@ -33,15 +47,31 @@ Wiz.prototype = {
     },
 
     start: function() {
-        this._currentStep = 0;
+        if (this.wizSteps.length == 0) {
+            throw 'no steps defined in this wizard: ' + this.wizName;
+        };
 
-        var currentStep = this.wizSteps[this._currentStep];
+        this._currentStepNumber = 0;
+        var self = this;
+
+        // check that goTo's are set
+        checkGoTos();
+        function checkGoTos() {
+            if (self.config.sequential) return;
+            for (var i = 0; i < self.wizSteps.length; i++) {
+                if (self.wizSteps[i].goTo == undefined) {
+                    throw "goTo is not defined in step: " + self.wizSteps[i].stepName;
+                }
+            }
+        }
+        var currentStep = this.wizSteps[this._currentStepNumber];
         currentStep.enterStep();
+        self._currentStep = currentStep;
     },
 
     next: function() {
         // store current step
-        var prevStep = this.wizSteps[this._currentStep];
+        var prevStep = this._currentStep;
 
         // pass result to the next step
         prevStep.beforeExit && prevStep.beforeExit();
@@ -50,7 +80,7 @@ Wiz.prototype = {
         extend(prevStep.getValues(), this.wizStorage);
 
         // out of steps
-        if (this._currentStep == this.wizSteps.length-1) return;
+        if (this._currentStepNumber == this.wizSteps.length-1) return;
 
         if (prevStep.getValues == undefined) {
             throw "getValues function is not defined";
@@ -58,8 +88,17 @@ Wiz.prototype = {
         }
 
         // go to next step
-        this._currentStep ++;
-        var nextStep = this.wizSteps[this._currentStep];
+        this._currentStepNumber ++;
+
+        var nextStep;
+        if (prevStep.goTo) {
+            nextStep = this.getStepByName(prevStep.goTo());
+        } else
+        {
+            nextStep = this.wizSteps[this._currentStepNumber];
+        }
+
+        this._currentStep = nextStep;
 
         function extend(src, dst) {
             for (var k in src) {
@@ -72,7 +111,7 @@ Wiz.prototype = {
 
         nextStep.enterStep(prevStep.getValues());
 
-        return this.wizSteps[this._currentStep];
+        return nextStep;
     },
 
     extend: function(destination) {
@@ -87,10 +126,17 @@ function WizStep(config)
 {
     var config = config || {name: 'Unnamed'};
 
-    this.wizName = config.name;
+    this.stepName = config.name;
+    if (config.name == undefined) {
+        throw "name is mandatory, should be unique";
+    };
+
+    this.goTo = config.goTo;
+
     if (config.getValues == undefined) {
         throw "getValues is mandatory, should be a function that returns an object with keys, values";
-    }
+    };
+
     this.getValues = config.getValues;
     this.onEnter = config.onEnter;
     this.beforeExit = config.beforeExit;
@@ -100,7 +146,7 @@ function WizStep(config)
 
 WizStep.prototype = {
     toString:function() {
-        return 'Step: ' + this.wizName;
+        return 'Step: ' + this.stepName;
     },
     enterStep: function(param) {
         this.input = param;

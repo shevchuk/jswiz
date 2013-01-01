@@ -3,7 +3,7 @@
  * @description: jswiz test
  */
 
-
+module("sequential wizard");
 testWiz();
 
 function testWiz() {
@@ -42,7 +42,7 @@ function testWiz() {
         }
     });
 
-    var addUserWiz = new Wiz('addUserWiz');
+    var addUserWiz = new Wiz({name: 'addUserWiz', sequential: true});
     addUserWiz.addStep(addUserStep);
     addUserWiz.addStep(confirmAddStep);
 
@@ -99,7 +99,7 @@ function testWiz() {
         }
     });
 
-    var w = new Wiz('addUser');
+    var w = new Wiz({name: 'addUser', sequential: true});
 
     w.addStep(step1);
     w.addStep(screen2);
@@ -107,9 +107,8 @@ function testWiz() {
     w.addStep(step4);
     w.start();
 
-    console.log(w.getStorage().length)
     test("Test", function () {
-        equal(0, w._currentStep, 'initial step');
+        equal(0, w._currentStepNumber, 'initial step');
         equal(false, checkBeforeExit, 'initial check before exit value');
         deepEqual({}, w.getStorage(), 'Empty initial storage');
         w.next();
@@ -123,7 +122,7 @@ function testWiz() {
                    email2:'kjdf@jdkfs.com',
                    email3:'nwe@k.cc'}, 'Checked storage value')
 
-        equal(2, w._currentStep, 'check step number');
+        equal(2, w._currentStepNumber, 'check step number');
         w.next();
         deepEqual(w.getStorage(), {name: 'hello',
             email:'sdi@id.com',
