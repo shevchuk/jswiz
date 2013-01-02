@@ -31,7 +31,7 @@ It doesn't contain any UI or dependencies
         }
     });
 
-    var addUserWiz = new Wiz('addUserWiz');
+    var addUserWiz = new Wiz({name: 'addUserWiz', sequential: true});
     addUserWiz.addStep(addUserStep);
     addUserWiz.addStep(confirmAddStep);
 
@@ -68,3 +68,26 @@ In real world, you need to mixin wizard step into your wizard form:
     addUserStep.extend(form);
 
 </pre>
+
+### Sequential and conditional wizards
+
+If you have a linear wizard you should create it like this `var wiz = new Wiz({name: 'wizName', sequential: true});`
+Usually wizards are not that simple so you need to provide information about next step which can vary:
+
+<pre>
+var confirmUserStep = new WizStep({
+    name: 'confirmUserStep',
+    getValues: function() {
+        return {confirmed: confirmed};
+    },
+    getNextStep: function() {
+        if (confirmed) {
+            return 'doneStep';
+        } else {
+            return 'addUserStep';
+        }
+    }
+});
+
+</pre>
+
