@@ -8,11 +8,15 @@ function Wiz(config)
     this.config = config;
     this.wizName = config.name;
     this.wizSteps = [];
-    this.wizStorage = {};
+
+    this._wizStorage = {};
 
     this._currentStepNumber = 0;
     this._currentStep;
-    this._prevStep;
+
+    // history
+    this._stepHistory = [];
+    this._wizStorageHistory = [];
 }
 
 Wiz.prototype = {
@@ -35,12 +39,16 @@ Wiz.prototype = {
         }
     },
 
+    getPreviousStep: function() {
+        return this._stepHistory.pop();
+    },
+
     getCurrentStep: function() {
         return this._currentStep;
     },
 
     getStorage: function() {
-        return this.wizStorage;
+        return this._wizStorage;
     },
 
     addStep: function(step) {
@@ -51,7 +59,9 @@ Wiz.prototype = {
      * resets the wizard storage
      */
     reset: function() {
-        this.wizStorage = {};
+        this._wizStorage = {};
+        this._stepHistory = [];
+        this._wizStorageHistory = [];
     },
 
     start: function() {
@@ -78,30 +88,66 @@ Wiz.prototype = {
         var currentStep = this.wizSteps[this._currentStepNumber];
 
         // store current step as prev also
-        self._prevStep = currentStep;
+        self._stepHistory.push(currentStep);
 
         currentStep.enterStep();
         self._currentStep = currentStep;
     },
 
     back: function() {
-        this._currentStep = this._prevStep;
+        this._currentStep = this.getPreviousStep();
         this._currentStep.enterStep();
+
+        // restore storage
+        this._wizStorageHistory.pop();
+        this._wizStorage = this._wizStorageHistory.pop();
+        if (!this._wizStorage) {
+            this._wizStorage = {};
+        }
+    },
+
+    updateStorage : function(newValue) {
+        extend(newValue, this._wizStorage);
+
+        // save current storage into the history
+        this._wizStorageHistory.push(clone(this.getStorage()));
+
+        function clone(storage) {
+            var obj = {};
+            for (var k in storage) {
+                obj[k] = storage[k];
+            }
+            return obj;
+        }
+
+        function extend(src, dst) {
+            for (var k in src) {
+                if (src.hasOwnProperty(k)) {
+                    dst[k] = src[k];
+                }
+            }
+            return dst;
+        };
     },
 
     next: function() {
         // store current step as previous
         var prevStep = this._currentStep;
-        this._prevStep = prevStep;
 
-            // pass result to the next step
+        // pass result to the next step
         prevStep.beforeExit && prevStep.beforeExit();
 
         // save result into storage
-        extend(prevStep.getValues(), this.wizStorage);
+        this.updateStorage(prevStep.getValues());
+
+        // save history
+        this._stepHistory.push(prevStep);
 
         // out of steps
-        if (this._currentStepNumber == this.wizSteps.length-1) return;
+        if (this._currentStepNumber == this.wizSteps.length-1 && this.config.sequential)
+        {
+            return;
+        }
 
         if (prevStep.getValues == undefined) {
             throw "getValues function is not defined";
@@ -120,15 +166,6 @@ Wiz.prototype = {
         }
 
         this._currentStep = nextStep;
-
-        function extend(src, dst) {
-            for (var k in src) {
-                if (src.hasOwnProperty(k)) {
-                    dst[k] = src[k];
-                }
-            }
-            return dst;
-        };
 
         nextStep.enterStep(prevStep.getValues());
 
