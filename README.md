@@ -89,5 +89,42 @@ var confirmUserStep = new WizStep({
     }
 });
 
+### How back works and what happens to storage
+
+Back function restores the storage state:
+<pre>
+    ...
+    var addUserStep = new WizStep({
+        name: 'addUserStep',
+        getValues: function() {
+            return {email: 'ivan@sidorov.ru'};
+        },
+        getNextStep: function() {
+            return 'confirmUserStep';
+        }
+    });
+    addUserStep.extend(form);
+
+    var confirmUserStep = new WizStep({
+        name: 'confirmUserStep',
+        getValues: function() {
+            return {confirmed: true};
+        },
+        getNextStep: function() {
+            return 'doneStep';
+        }
+    });
+
+    ...
+    wiz.start();
+    wiz.next();
+    wiz.getStorage() --> {email: 'ivan@sidorov.ru'}
+
+    wiz.next();
+    wiz.getStorage() --> {email: 'ivan@sidorov.ru', confirmed: true}
+
+    wiz.back();
+    wiz.getStorage() --> {email: 'ivan@sidorov.ru'}
+
 </pre>
 
