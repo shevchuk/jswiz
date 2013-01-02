@@ -5,8 +5,8 @@
 
 function Wiz(config)
 {
-    this.config = config;
-    this.wizName = config.name;
+    this.config = config || {name: 'UnnamedWizard'};
+    this.wizName = this.config.name;
     this.wizSteps = [];
 
     this._wizStorage = {};
@@ -67,7 +67,7 @@ Wiz.prototype = {
     start: function() {
         this.reset();
         if (this.wizSteps.length == 0) {
-            throw 'no steps defined in this wizard: ' + this.wizName;
+            throw new WizError(WizError.WIZ_NO_STEPS + this.wizName);
         };
 
         this._currentStepNumber = 0;
@@ -79,7 +79,7 @@ Wiz.prototype = {
             if (self.config.sequential) return;
             for (var i = 0; i < self.wizSteps.length; i++) {
                 if (self.wizSteps[i].getNextStep == undefined) {
-                    throw "getNextStep is not defined in step: " + self.wizSteps[i].stepName;
+                    throw new WizError(WizError.WIZ_STEP_NO_GET_NEXT_STEP + self.wizSteps[i].stepName);
                 }
             }
         }
@@ -144,24 +144,19 @@ Wiz.prototype = {
         this._stepHistory.push(prevStep);
 
         // out of steps
-        if (this._currentStepNumber == this.wizSteps.length-1 && this.config.sequential)
+        if (this._currentStepNumber == this.wizSteps.length-1 &&
+            this.config.sequential)
         {
             return;
         }
 
-        if (prevStep.getValues == undefined) {
-            throw "getValues function is not defined";
-            return;
-        }
-
         // go to next step
-        this._currentStepNumber ++;
-
         var nextStep;
         if (prevStep.getNextStep) {
             nextStep = this.getStepByName(prevStep.getNextStep());
         } else
         {
+            this._currentStepNumber ++;
             nextStep = this.wizSteps[this._currentStepNumber];
         }
 
@@ -186,13 +181,13 @@ function WizStep(config)
 
     this.stepName = config.name;
     if (config.name == undefined) {
-        throw "name is mandatory, should be unique";
+        throw new WizError(WizError.WIZ_STEP_NAME);
     };
 
     this.getNextStep = config.getNextStep;
 
     if (config.getValues == undefined) {
-        throw "getValues is mandatory, should be a function that returns an object with keys, values";
+        throw new WizError(WizError.WIZ_STEP_GET_VALUES);
     };
 
     this.getValues = config.getValues;
@@ -221,3 +216,19 @@ WizStep.prototype = {
         return destination;
     }
 };
+
+function WizError(message) {
+    this.message = message;
+}
+
+WizError.prototype = {
+    toString: function() {
+        return this.message;
+    }
+}
+
+WizError.WIZ_STEP_NAME = "name is mandatory, should be unique";
+WizError.WIZ_STEP_GET_VALUES = "getValues is mandatory, should be a function that returns an object with keys, values";
+WizError.WIZ_NO_STEPS = "no steps defined in this wizard: ";
+WizError.WIZ_STEP_NO_GET_NEXT_STEP = "getNextStep is not defined in step: ";
+

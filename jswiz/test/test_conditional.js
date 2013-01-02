@@ -84,3 +84,40 @@ test("Back test", function() {
     wiz.next();
     equal(wiz.getCurrentStep().stepName, 'confirmUserStep', 'Check next after several back');
 });
+
+test("Throws test", function () {
+    throws(function() {
+            new WizStep({});
+        },
+        /name is mandatory, should be unique/,
+        'raised error message about mandatory step name'
+    );
+
+    throws(function() {
+            new WizStep({name: 'wizStep'});
+        },
+        /getValues is mandatory, should be/,
+        'raised error message about mandatory getValues'
+    );
+
+    throws(function() {
+            var w = new Wiz();
+
+            w.start();
+        },
+        /no steps defined in this wizard/,
+        'raised error message about no steps in wizard'
+    );
+
+    throws(function() {
+            var w = new Wiz();
+            w.addStep(new WizStep({
+                name: 'wizStep',
+                getValues: function() {}
+            }));
+            w.start();
+        },
+        /getNextStep/,
+        'raised error message about no getNextStep'
+    );
+});
