@@ -88,6 +88,7 @@ var confirmUserStep = new WizStep({
         }
     }
 });
+</pre>
 
 ### How back works and what happens to storage
 
