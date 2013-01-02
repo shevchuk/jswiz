@@ -12,6 +12,7 @@ function Wiz(config)
 
     this._currentStepNumber = 0;
     this._currentStep;
+    this._prevStep;
 }
 
 Wiz.prototype = {
@@ -46,7 +47,15 @@ Wiz.prototype = {
         this.wizSteps.push(step);
     },
 
+    /*
+     * resets the wizard storage
+     */
+    reset: function() {
+        this.wizStorage = {};
+    },
+
     start: function() {
+        this.reset();
         if (this.wizSteps.length == 0) {
             throw 'no steps defined in this wizard: ' + this.wizName;
         };
@@ -54,26 +63,38 @@ Wiz.prototype = {
         this._currentStepNumber = 0;
         var self = this;
 
-        // check that goTo's are set
-        checkGoTos();
-        function checkGoTos() {
+        // check that getNextSteps are set
+        checkGetNextStep();
+        function checkGetNextStep() {
             if (self.config.sequential) return;
             for (var i = 0; i < self.wizSteps.length; i++) {
-                if (self.wizSteps[i].goTo == undefined) {
-                    throw "goTo is not defined in step: " + self.wizSteps[i].stepName;
+                if (self.wizSteps[i].getNextStep == undefined) {
+                    throw "getNextStep is not defined in step: " + self.wizSteps[i].stepName;
                 }
             }
         }
+
+        // store current step
         var currentStep = this.wizSteps[this._currentStepNumber];
+
+        // store current step as prev also
+        self._prevStep = currentStep;
+
         currentStep.enterStep();
         self._currentStep = currentStep;
     },
 
-    next: function() {
-        // store current step
-        var prevStep = this._currentStep;
+    back: function() {
+        this._currentStep = this._prevStep;
+        this._currentStep.enterStep();
+    },
 
-        // pass result to the next step
+    next: function() {
+        // store current step as previous
+        var prevStep = this._currentStep;
+        this._prevStep = prevStep;
+
+            // pass result to the next step
         prevStep.beforeExit && prevStep.beforeExit();
 
         // save result into storage
@@ -91,8 +112,8 @@ Wiz.prototype = {
         this._currentStepNumber ++;
 
         var nextStep;
-        if (prevStep.goTo) {
-            nextStep = this.getStepByName(prevStep.goTo());
+        if (prevStep.getNextStep) {
+            nextStep = this.getStepByName(prevStep.getNextStep());
         } else
         {
             nextStep = this.wizSteps[this._currentStepNumber];
@@ -131,13 +152,15 @@ function WizStep(config)
         throw "name is mandatory, should be unique";
     };
 
-    this.goTo = config.goTo;
+    this.getNextStep = config.getNextStep;
 
     if (config.getValues == undefined) {
         throw "getValues is mandatory, should be a function that returns an object with keys, values";
     };
 
     this.getValues = config.getValues;
+
+    // hooks
     this.onEnter = config.onEnter;
     this.beforeExit = config.beforeExit;
 

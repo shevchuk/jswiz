@@ -13,7 +13,7 @@ var addUserStep = new WizStep({
     getValues: function() {
         return {email: this.getEmail()};
     },
-    goTo: function() {
+    getNextStep: function() {
         return 'confirmUserStep';
     }
 });
@@ -25,7 +25,7 @@ var confirmUserStep = new WizStep({
     getValues: function() {
         return {confirmed: confirmed};
     },
-    goTo: function() {
+    getNextStep: function() {
         if (confirmed) {
             return 'doneStep';
         } else {
@@ -39,7 +39,7 @@ var doneStep = new WizStep({
     getValues: function() {
 
     },
-    goTo: function() {
+    getNextStep: function() {
 
     }
 });
@@ -57,4 +57,14 @@ test("Conditional wizard test", function () {
     wiz.next();
 
     equal(wiz.getStepByName('addUserStep').stepName, 'addUserStep', 'getStepByName check');
+});
+
+test("Back test", function() {
+    wiz.start();
+    equal(wiz.getCurrentStep().stepName, 'addUserStep', 'Check initial step');
+    wiz.next();
+    equal(wiz.getCurrentStep().stepName, 'confirmUserStep', 'check confirm step name');
+    wiz.back();
+    equal(wiz.getCurrentStep().stepName, 'addUserStep', 'Check that back function works');
+
 });
