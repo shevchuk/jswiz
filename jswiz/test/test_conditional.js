@@ -1,6 +1,12 @@
 module("conditional wizard");
 
-var wiz = new Wiz({name: 'condWizard'});
+var dataSent = false;
+var wiz = new Wiz({
+    name: 'condWizard',
+    onComplete: function() {
+        dataSent = true;
+    }
+});
 
 var form = {
     getEmail:function () {
@@ -86,9 +92,13 @@ test("Back test", function() {
     equal(wiz.getCurrentStep().stepName, 'confirmUserStep', 'Check next after several back');
 
     wiz.next(); // we are on last step (doneStep)
+    equal(dataSent, false, 'onComplete function works');
     wiz.next(); // multiple next's
+    equal(dataSent, true, 'onComplete function works');
     wiz.next();
-    deepEqual({email: 'ivan@sidorov.ru', confirmed: true, done: true}, wiz.getStorage(), 'Check that storage is correct at the end')
+    deepEqual({email: 'ivan@sidorov.ru', confirmed: true, done: true}, wiz.getStorage(), 'Check that storage is correct at the end');
+
+
 });
 
 test("Throws test", function () {

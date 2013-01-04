@@ -162,12 +162,17 @@ Wiz.prototype = {
             this.config.sequential)
         {
             this._completed = true;
+
+            this.onComplete && this.onComplete();
             return;
         }
 
         // this is a final step
         if (prevStep.final)
         {
+            this._completed = true;
+
+            this.onComplete && this.onComplete();
             return;
         }
 
