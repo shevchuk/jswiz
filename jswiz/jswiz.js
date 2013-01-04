@@ -1,6 +1,6 @@
 /**
- * @author: Mikhail Shevchuk
- * @description: jswiz is a skeleton for a wizard
+ * @author: Mikhail Shevchuk <mikhail.shevchuk@gmail.com>
+ * @description: jswiz is a wizard skeleton
  */
 
 function Wiz(config)
@@ -13,6 +13,7 @@ function Wiz(config)
 
     this._currentStepNumber = 0;
     this._currentStep;
+    this._completed = false;
 
     // history
     this._stepHistory = [];
@@ -31,7 +32,7 @@ Wiz.prototype = {
     },
 
     getStepByName: function(name) {
-        for (var i=0; this.wizSteps.length; i++)
+        for (var i=0; i < this.wizSteps.length; i++)
         {
             if (this.wizSteps[i].stepName == name) {
                 return this.wizSteps[i];
@@ -98,7 +99,16 @@ Wiz.prototype = {
         this._currentStep = this.getPreviousStep();
         this._currentStep.enterStep();
 
-        // restore storage
+        /*
+         * restore storage
+         */
+
+        // if this is the last step in the wiz and it is completed
+        // then pop it's value too
+        if (this._completed) {
+            this._wizStorageHistory.pop();
+        }
+
         this._wizStorageHistory.pop();
         this._wizStorage = this._wizStorageHistory.pop();
         if (!this._wizStorage) {
@@ -131,6 +141,9 @@ Wiz.prototype = {
     },
 
     next: function() {
+        // do nothing if completed
+        if (this._completed) return;
+
         // store current step as previous
         var prevStep = this._currentStep;
 
@@ -147,13 +160,25 @@ Wiz.prototype = {
         if (this._currentStepNumber == this.wizSteps.length-1 &&
             this.config.sequential)
         {
+            this._completed = true;
             return;
         }
 
+        // this is a final step
+        if (prevStep.final)
+        {
+            return;
+        }
+
+
         // go to next step
         var nextStep;
-        if (prevStep.getNextStep) {
+        if (prevStep.getNextStep && !this.config.sequential) {
             nextStep = this.getStepByName(prevStep.getNextStep());
+            if (nextStep == undefined) {
+                throw new WizError(WizError.WIZ_NEXT_STEP_WAS_NOT_FOUND + '(step name: [' + prevStep.getNextStep() +
+                    '] was not found in [' + prevStep.stepName +']');
+            }
         } else
         {
             this._currentStepNumber ++;
@@ -163,7 +188,6 @@ Wiz.prototype = {
         this._currentStep = nextStep;
 
         nextStep.enterStep(prevStep.getValues());
-
         return nextStep;
     },
 
@@ -184,6 +208,7 @@ function WizStep(config)
         throw new WizError(WizError.WIZ_STEP_NAME);
     };
 
+    this.final = config.final;
     this.getNextStep = config.getNextStep;
 
     if (config.getValues == undefined) {
@@ -225,10 +250,11 @@ WizError.prototype = {
     toString: function() {
         return this.message;
     }
-}
+};
 
 WizError.WIZ_STEP_NAME = "name is mandatory, should be unique";
 WizError.WIZ_STEP_GET_VALUES = "getValues is mandatory, should be a function that returns an object with keys, values";
 WizError.WIZ_NO_STEPS = "no steps defined in this wizard: ";
 WizError.WIZ_STEP_NO_GET_NEXT_STEP = "getNextStep is not defined in step: ";
+WizError.WIZ_NEXT_STEP_WAS_NOT_FOUND = "Next step was not found. If this is the last step, you should set `final: true`";
 

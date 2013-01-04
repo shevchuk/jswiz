@@ -42,9 +42,17 @@ function testWiz() {
         }
     });
 
+    var lastStep = new WizStep({
+        name: 'lastStep',
+        getValues : function() {
+            return {lastStepValue: true};
+        }
+    });
+
     var addUserWiz = new Wiz({name: 'addUserWiz', sequential: true});
     addUserWiz.addStep(addUserStep);
     addUserWiz.addStep(confirmAddStep);
+    addUserWiz.addStep(lastStep);
 
     var step1 = new WizStep({
         name:'nameEnter',
@@ -139,16 +147,43 @@ function testWiz() {
 
         equal(confirmAddCheck, true, 'initial add user confirm check');
         addUserWiz.start();
+        equal(addUserWiz.getCurrentStep().stepName, 'addUserStep', 'check initial name');
         equal(confirmAddCheck, false, 'onEnter first screen add user confirm check');
         addUserWiz.next();
+        equal(addUserWiz.getCurrentStep().stepName, 'confirmAddStep', 'check step name after next');
         addUserWiz.next();
+        addUserWiz.next();
+
+        addUserWiz.next();
+        addUserWiz.next();
+        addUserWiz.next(); /// next more than needed;
+
         equal(confirmAddCheck, true, 'final add user confirm check');
 
         deepEqual(addUserWiz.getStorage(), {
             firstName: "Ivan",
             secondName: "Sidorov",
             email: "ivan@sidorov.ru",
+            lastStepValue: true,
             confirmed: true}, 'Check add user info');
+
+        addUserWiz.back();
+
+        deepEqual(addUserWiz.getStorage(), {
+            firstName: "Ivan",
+            secondName: "Sidorov",
+            email: "ivan@sidorov.ru"}, 'Check storage after back');
+
+        addUserWiz.back();
+
+
+        addUserWiz.back();
+
+        equal(addUserWiz.getCurrentStep().stepName, 'addUserStep', 'check step name after back');
+
+
+
+
     });
 
     return w;

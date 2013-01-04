@@ -36,8 +36,9 @@ var confirmUserStep = new WizStep({
 
 var doneStep = new WizStep({
     name: 'doneStep',
+    final: true,
     getValues: function() {
-
+        return {done: true};
     },
     getNextStep: function() {
 
@@ -83,6 +84,10 @@ test("Back test", function() {
 
     wiz.next();
     equal(wiz.getCurrentStep().stepName, 'confirmUserStep', 'Check next after several back');
+
+    wiz.next(); // we are on last step (doneStep)
+    wiz.next(); // multiple next's
+    deepEqual({email: 'ivan@sidorov.ru', confirmed: true, done: true}, wiz.getStorage(), 'Check that storage is correct at the end')
 });
 
 test("Throws test", function () {
@@ -119,5 +124,21 @@ test("Throws test", function () {
         },
         /getNextStep/,
         'raised error message about no getNextStep'
+    );
+
+    throws(function() {
+            var w = new Wiz();
+            w.addStep(new WizStep({
+                name: 'wizStep',
+                getValues: function() {},
+                getNextStep: function() {
+                    return 'wrongStep';
+                }
+            }));
+            w.start();
+            w.next();
+        },
+        /Next step was not found./,
+        'raised error message about next step was not found'
     );
 });
