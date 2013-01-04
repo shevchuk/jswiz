@@ -1,6 +1,6 @@
 /**
  * @author: Mikhail Shevchuk <mikhail.shevchuk@gmail.com>
- * @description: jswiz is a wizard skeleton
+ * @description: JsWiz - lightweight library for making wizards
  */
 
 function Wiz(config)
@@ -81,7 +81,8 @@ Wiz.prototype = {
         function checkGetNextStep() {
             if (self.config.sequential) return;
             for (var i = 0; i < self.wizSteps.length; i++) {
-                if (self.wizSteps[i].getNextStep == undefined) {
+                if (self.wizSteps[i].getNextStep == undefined &&
+                    !self.wizSteps[i].final) {
                     throw new WizError(WizError.WIZ_STEP_NO_GET_NEXT_STEP + self.wizSteps[i].stepName);
                 }
             }
@@ -143,6 +144,7 @@ Wiz.prototype = {
     },
 
     next: function() {
+        var self = this;
         // do nothing if completed
         if (this._completed) return;
         // store current step as previous
@@ -161,19 +163,21 @@ Wiz.prototype = {
         if (this._currentStepNumber == this.wizSteps.length-1 &&
             this.config.sequential)
         {
-            this._completed = true;
-
-            this.onComplete && this.onComplete();
+            completeWizard();
             return;
         }
 
         // this is a final step
         if (prevStep.final)
         {
-            this._completed = true;
-
-            this.onComplete && this.onComplete();
+            completeWizard();
             return;
+        }
+
+        function completeWizard() {
+            self._completed = true;
+
+            self.onComplete && self.onComplete(self.getStorage());
         }
 
         // go to next step
@@ -195,6 +199,24 @@ Wiz.prototype = {
 
         nextStep.enterStep(prevStep.getValues());
         return nextStep;
+    },
+
+    getAvailableMoves: function() {
+        var next = back = final = false;
+
+        if (this._currentStep.getNextStep && this._currentStep.getNextStep()) {
+            next = true;
+        }
+
+        if (this._stepHistory.length > 1) {
+            back = true;
+        }
+
+        return {
+            next: next,
+            back: back,
+            final: !!this._currentStep.final
+        };
     },
 
     extend: function(destination) {

@@ -3,7 +3,8 @@ module("conditional wizard");
 var dataSent = false;
 var wiz = new Wiz({
     name: 'condWizard',
-    onComplete: function() {
+    onComplete: function(data) {
+        ok(data, 'data received')
         dataSent = true;
     }
 });
@@ -98,6 +99,64 @@ test("Back test", function() {
     wiz.next();
     deepEqual({email: 'ivan@sidorov.ru', confirmed: true, done: true}, wiz.getStorage(), 'Check that storage is correct at the end');
 
+    // too many back's
+    wiz.back();
+    wiz.back();
+    wiz.back();
+});
+
+test("Testing state", function () {
+    var w = new Wiz({name: 'testStateWiz'});
+
+    var addUserStep = new WizStep({
+        name: 'addUserStep',
+        getValues: function() {},
+        getNextStep: function() {
+            return 'addEmailStep';
+        }
+    });
+
+    var addEmailStep = new WizStep({
+        name: 'addEmailStep',
+        getValues: function() {},
+        getNextStep: function() {
+            return 'congratsStep';
+        }
+    });
+
+    var congratsStep = new WizStep({
+        name: 'congratsStep',
+        getValues: function() {},
+        final: true
+    });
+
+    w.addStep(addUserStep);
+    w.addStep(addEmailStep);
+    w.addStep(congratsStep);
+
+    w.start();
+
+    deepEqual(w.getAvailableMoves(), {
+        back: false,
+        next: true,
+        final: false
+    }, 'testing state in add user step');
+
+    w.next();
+
+    deepEqual(w.getAvailableMoves(), {
+        back: true,
+        next: true,
+        final: false
+    }, 'testing state in add email step');
+
+    w.next();
+
+    deepEqual(w.getAvailableMoves(), {
+        back: true,
+        next: false,
+        final: true
+    }, 'testing state in congrats step');
 
 });
 
