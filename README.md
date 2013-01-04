@@ -5,6 +5,8 @@ It may help you do build flexible custom wizard. It doesn't contain any UI or de
 This library solves a problem of building a wizard with dynamic flow and manipulating with data
 passed between screens.
 
+### Simple sequential wizard
+
 <pre>
     var stubFormResult = {
         firstName: 'Ivan',
