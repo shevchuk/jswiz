@@ -124,7 +124,7 @@ Back function restores the storage state:
     wiz.next();
     wiz.getStorage() --> {email: 'ivan@sidorov.ru', confirmed: true}
 
-    *wiz.back();*
+    wiz.back();
     wiz.getStorage() --> {email: 'ivan@sidorov.ru'}
 
 </pre>
