@@ -84,7 +84,6 @@ function testWiz() {
     var email2AsInput = '';
     var screen3 = {
         getEmail2 : function(p) {
-            console.log('input param: ' + p.email2);
             email2AsInput = p.email2;
             return p.email2;
         }

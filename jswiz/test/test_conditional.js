@@ -87,6 +87,7 @@ test("Back test", function() {
 
     wiz.next(); // we are on last step (doneStep)
     wiz.next(); // multiple next's
+    wiz.next();
     deepEqual({email: 'ivan@sidorov.ru', confirmed: true, done: true}, wiz.getStorage(), 'Check that storage is correct at the end')
 });
 

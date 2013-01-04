@@ -6,9 +6,11 @@
 function Wiz(config)
 {
     this.config = config || {name: 'UnnamedWizard'};
-    this.wizName = this.config.name;
-    this.wizSteps = [];
 
+    this.onComplete = this.config.onComplete;
+    this.wizName = this.config.name;
+
+    this.wizSteps = [];
     this._wizStorage = {};
 
     this._currentStepNumber = 0;
@@ -143,7 +145,6 @@ Wiz.prototype = {
     next: function() {
         // do nothing if completed
         if (this._completed) return;
-
         // store current step as previous
         var prevStep = this._currentStep;
 
@@ -170,9 +171,9 @@ Wiz.prototype = {
             return;
         }
 
-
         // go to next step
         var nextStep;
+
         if (prevStep.getNextStep && !this.config.sequential) {
             nextStep = this.getStepByName(prevStep.getNextStep());
             if (nextStep == undefined) {
