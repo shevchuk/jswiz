@@ -1,6 +1,9 @@
 # Synopsis
-**JsWiz** is a facility for building a skeleton for a wizard component
-It doesn't contain any UI or dependencies
+**JsWiz** is a leightweight facility for building a skeleton for a wizard component in JavaScript
+It may help you do build flexible custom wizard. It doesn't contain any UI or dependencies.
+
+This library solves a problem of building a wizard with dynamic flow and manipulating with data
+passed between screens.
 
 <pre>
     var stubFormResult = {
