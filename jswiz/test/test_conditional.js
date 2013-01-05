@@ -62,14 +62,26 @@ test("Conditional wizard test", function () {
     wiz.start();
     equal(wiz.getCurrentStep().stepName, 'addUserStep', 'check initial step name');
     wiz.next();
+
     equal(wiz.getCurrentStep().stepName, 'confirmUserStep', 'check confirm step name');
     wiz.next();
 
     equal(wiz.getStepByName('addUserStep').stepName, 'addUserStep', 'getStepByName check');
+
+    // multiple next
+    wiz.next();
+    wiz.next();
+
+    wiz.next();
+    wiz.next();
+
+    wiz.back();
+    equal(wiz.getCurrentStep().stepName, 'confirmUserStep', 'check confirm step after wizard is complete');
 });
 
 test("Back test", function() {
     wiz.start();
+    dataSent = false;
     equal(wiz.getCurrentStep().stepName, 'addUserStep', 'Check initial step');
 
     wiz.next();

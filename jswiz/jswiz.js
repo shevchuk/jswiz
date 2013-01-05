@@ -43,6 +43,13 @@ Wiz.prototype = {
     },
 
     getPreviousStep: function() {
+        if (this._completed)
+        {
+            // wizard is completed but user wants back
+            this._stepHistory.pop();
+            this._completed = false;
+        }
+
         return this._stepHistory.pop();
     },
 
@@ -62,6 +69,8 @@ Wiz.prototype = {
      * resets the wizard storage
      */
     reset: function() {
+        this._currentStepNumber = 0;
+        this._completed = false;
         this._wizStorage = {};
         this._stepHistory = [];
         this._wizStorageHistory = [];
@@ -202,7 +211,7 @@ Wiz.prototype = {
     },
 
     getAvailableMoves: function() {
-        var next = back = final = false;
+        var next = back = false;
 
         if (this._currentStep.getNextStep && this._currentStep.getNextStep()) {
             next = true;

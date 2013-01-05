@@ -169,6 +169,7 @@ function testWiz() {
         addUserWiz.back();
 
         deepEqual(addUserWiz.getStorage(), {
+            confirmed: true,
             firstName: "Ivan",
             secondName: "Sidorov",
             email: "ivan@sidorov.ru"}, 'Check storage after back');
