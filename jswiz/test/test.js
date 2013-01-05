@@ -180,10 +180,6 @@ function testWiz() {
         addUserWiz.back();
 
         equal(addUserWiz.getCurrentStep().stepName, 'addUserStep', 'check step name after back');
-
-
-
-
     });
 
     return w;
