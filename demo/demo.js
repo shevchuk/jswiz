@@ -1,28 +1,39 @@
 window.addEvent('load', function(){
-
     var addUser = $('addUser');
     var confirmUser = $('confirmUser');
     var congrats = $('congrats');
 
     var w = new Wiz({
-        name: 'wiz'
+        name: 'wiz',
+        onComplete: function() {
+            var completedScreen = $('completedScreen');
+
+            completedScreen.setStyle('display', 'block');
+            congrats.setStyle('display', 'none');
+
+            var s = w.getStorage();
+
+            $('toolbar').set('html',
+                '<p>First name: ' + s.firstName + '</p>' +
+                '<p>Second name: ' + s.secondName + '</p>'
+            );
+            console.log(w.getStorage())
+        }
     });
 
     $('next').onclick = function () {
-        w.next();
         updateToolbar();
+        w.next();
     }
 
     $('back').onclick = function () {
-
-        w.back();
         updateToolbar();
+        w.back();
     }
 
     $('complete').onclick = function () {
-        w.next();
         updateToolbar();
-        console.log(w.getStorage());
+        w.next();
     }
 
     hideAll();
