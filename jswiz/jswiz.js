@@ -257,8 +257,6 @@ function WizStep(config)
     // hooks
     this.onEnter = config.onEnter;
     this.beforeExit = config.beforeExit;
-
-    this.input = null;
 }
 
 WizStep.prototype = {
@@ -266,8 +264,6 @@ WizStep.prototype = {
         return 'Step: ' + this.stepName;
     },
     enterStep: function(param) {
-        this.input = param;
-
         // call onEnter hook
         this.onEnter && this.onEnter(param);
     },
