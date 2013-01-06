@@ -81,10 +81,15 @@ test("Conditional wizard test", function () {
 
 test("State change handler test", function () {
     var toggle = false;
+    var storageUpdatedToggle = false;
+
     var w = new Wiz({
         name: 'testStateHandlerWiz',
         onStepChange: function() {
             toggle = !toggle;
+        },
+        onStorageUpdate: function() {
+            storageUpdatedToggle = !storageUpdatedToggle;
         }
     });
 
@@ -117,10 +122,22 @@ test("State change handler test", function () {
     w.start();
 
     equal(toggle, false, 'step not changed after changed');
+    equal(storageUpdatedToggle, false, 'initial storage updated handler check');
     w.next();
-    equal(toggle, true, 'step changed after next');
+    equal(toggle, true, 'stepChanged after next');
+    equal(storageUpdatedToggle, true, 'storage updated handler check 1');
     w.next();
-    equal(toggle, false, 'step changed after next');
+    equal(toggle, false, 'stepChanged after next');
+    equal(storageUpdatedToggle, false, 'storage updated handler check 2')
+    w.back();
+    equal(toggle, true, 'stepChanged after back');
+    equal(storageUpdatedToggle, true, 'storage updated handler after back');
+    w.next();
+    equal(toggle, false, 'stepChanged after next after back');
+    equal(storageUpdatedToggle, false, 'storage updated handler after next after back');
+    w.next(); // final
+    equal(toggle, false, 'stepChanged is not called after completed');
+    equal(storageUpdatedToggle, true, 'storage updated after completed')
 });
 
 test("Back test", function() {

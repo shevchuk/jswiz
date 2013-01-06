@@ -9,6 +9,7 @@ function Wiz(config)
 
     this.onComplete = this.config.onComplete;
     this.onStepChange = this.config.onStepChange;
+    this.onStorageUpdate = this.config.onStorageUpdate;
     this.wizName = this.config.name;
 
     this.wizSteps = [];
@@ -111,6 +112,7 @@ Wiz.prototype = {
     back: function() {
         this._currentStep = this.getPreviousStep();
         this._currentStep.enterStep();
+        this.onStepChange && this.onStepChange();
 
         /*
          * restore storage
@@ -124,12 +126,14 @@ Wiz.prototype = {
 
         this._wizStorageHistory.pop();
         this._wizStorage = this._wizStorageHistory.pop();
+        this.onStorageUpdate && this.onStorageUpdate();
         if (!this._wizStorage) {
             this._wizStorage = {};
         }
     },
 
     updateStorage : function(newValue) {
+        this.onStorageUpdate && this.onStorageUpdate();
         extend(newValue, this._wizStorage);
 
         // save current storage into the history

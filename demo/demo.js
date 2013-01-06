@@ -5,6 +5,10 @@ window.addEvent('load', function(){
 
     var w = new Wiz({
         name: 'wiz',
+        onStepChange: function() {
+            hideAll();
+            updateToolbar();
+        },
         onComplete: function() {
             var completedScreen = $('completedScreen');
 
@@ -22,21 +26,16 @@ window.addEvent('load', function(){
     });
 
     $('next').onclick = function () {
-        updateToolbar();
         w.next();
     }
 
     $('back').onclick = function () {
-        updateToolbar();
         w.back();
     }
 
     $('complete').onclick = function () {
-        updateToolbar();
         w.next();
     }
-
-    hideAll();
 
     function updateToolbar() {
         var moves = w.getAvailableMoves();
@@ -61,7 +60,6 @@ window.addEvent('load', function(){
             };
         },
         onEnter: function(p) {
-            hideAll();
             addUser.setStyle('display', 'block');
         },
         getNextStep: function() {
@@ -77,9 +75,6 @@ window.addEvent('load', function(){
             };
         },
         onEnter: function(p) {
-            hideAll();
-            updateToolbar();
-
             confirmUser.setStyle('display', 'block');
         },
         getNextStep: function() {
@@ -95,18 +90,19 @@ window.addEvent('load', function(){
             };
         },
         onEnter: function(p) {
-            hideAll();
-            updateToolbar();
             congrats.setStyle('display', 'block');
         },
         final: true
     });
+
+    hideAll();
 
     w.addStep(addUserStep);
     w.addStep(confirmUserStep);
     w.addStep(congratsStep);
 
     w.start();
+
 
     updateToolbar();
 });
