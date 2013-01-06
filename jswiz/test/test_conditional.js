@@ -82,6 +82,7 @@ test("Conditional wizard test", function () {
 test("State change handler test", function () {
     var toggle = false;
     var storageUpdatedToggle = false;
+    var started = false;
 
     var w = new Wiz({
         name: 'testStateHandlerWiz',
@@ -90,6 +91,9 @@ test("State change handler test", function () {
         },
         onStorageUpdate: function() {
             storageUpdatedToggle = !storageUpdatedToggle;
+        },
+        onStart: function() {
+            started = true;
         }
     });
 
@@ -120,6 +124,7 @@ test("State change handler test", function () {
     w.addStep(congratsStep);
 
     w.start();
+    equal(started, true, 'onStart handler')
 
     equal(toggle, false, 'step not changed after changed');
     equal(storageUpdatedToggle, false, 'initial storage updated handler check');

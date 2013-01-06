@@ -7,10 +7,12 @@ function Wiz(config)
 {
     this.config = config || {name: 'UnnamedWizard'};
 
+    this.wizName = this.config.name;
+
+    this.onStart = this.config.onStart;
     this.onComplete = this.config.onComplete;
     this.onStepChange = this.config.onStepChange;
     this.onStorageUpdate = this.config.onStorageUpdate;
-    this.wizName = this.config.name;
 
     this.wizSteps = [];
     this._wizStorage = {};
@@ -105,8 +107,10 @@ Wiz.prototype = {
         // store current step as prev also
         self._stepHistory.push(currentStep);
 
-        currentStep.enterStep();
         self._currentStep = currentStep;
+        currentStep.enterStep();
+
+        self.onStart && self.onStart();
     },
 
     back: function() {
@@ -299,4 +303,3 @@ WizError.WIZ_STEP_GET_VALUES = "getValues is mandatory, should be a function tha
 WizError.WIZ_NO_STEPS = "no steps defined in this wizard: ";
 WizError.WIZ_STEP_NO_GET_NEXT_STEP = "getNextStep is not defined in step: ";
 WizError.WIZ_NEXT_STEP_WAS_NOT_FOUND = "Next step was not found. If this is the last step, you should set `final: true`";
-
