@@ -112,7 +112,6 @@ Wiz.prototype = {
     back: function() {
         this._currentStep = this.getPreviousStep();
         this._currentStep.enterStep();
-        this.onStepChange && this.onStepChange();
 
         /*
          * restore storage
@@ -126,19 +125,22 @@ Wiz.prototype = {
 
         this._wizStorageHistory.pop();
         this._wizStorage = this._wizStorageHistory.pop();
-        this.onStorageUpdate && this.onStorageUpdate();
+
         if (!this._wizStorage) {
             this._wizStorage = {};
         }
+
+        // call hooks
+        this.onStorageUpdate && this.onStorageUpdate();
+        this.onStepChange && this.onStepChange();
     },
 
     updateStorage : function(newValue) {
-        this.onStorageUpdate && this.onStorageUpdate();
         extend(newValue, this._wizStorage);
-
         // save current storage into the history
         this._wizStorageHistory.push(clone(this.getStorage()));
 
+        this.onStorageUpdate && this.onStorageUpdate();
         function clone(storage) {
             var obj = {};
             for (var k in storage) {
