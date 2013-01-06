@@ -79,6 +79,50 @@ test("Conditional wizard test", function () {
     equal(wiz.getCurrentStep().stepName, 'confirmUserStep', 'check confirm step after wizard is complete');
 });
 
+test("State change handler test", function () {
+    var toggle = false;
+    var w = new Wiz({
+        name: 'testStateHandlerWiz',
+        onStepChange: function() {
+            toggle = !toggle;
+        }
+    });
+
+    var addUserStep = new WizStep({
+        name: 'addUserStep',
+        getValues: function() {},
+        getNextStep: function() {
+            return 'addEmailStep';
+        }
+    });
+
+    var addEmailStep = new WizStep({
+        name: 'addEmailStep',
+        getValues: function() {},
+        getNextStep: function() {
+            return 'congratsStep';
+        }
+    });
+
+    var congratsStep = new WizStep({
+        name: 'congratsStep',
+        getValues: function() {},
+        final: true
+    });
+
+    w.addStep(addUserStep);
+    w.addStep(addEmailStep);
+    w.addStep(congratsStep);
+
+    w.start();
+
+    equal(toggle, false, 'step not changed after changed');
+    w.next();
+    equal(toggle, true, 'step changed after next');
+    w.next();
+    equal(toggle, false, 'step changed after next');
+});
+
 test("Back test", function() {
     wiz.start();
     dataSent = false;

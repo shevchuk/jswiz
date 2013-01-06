@@ -8,6 +8,7 @@ function Wiz(config)
     this.config = config || {name: 'UnnamedWizard'};
 
     this.onComplete = this.config.onComplete;
+    this.onStepChange = this.config.onStepChange;
     this.wizName = this.config.name;
 
     this.wizSteps = [];
@@ -190,6 +191,8 @@ Wiz.prototype = {
         }
 
         // go to next step
+        self.onStepChange && self.onStepChange();
+
         var nextStep;
 
         if (prevStep.getNextStep && !this.config.sequential) {
