@@ -64,11 +64,9 @@ window.addEvent('load', function(){
 
     var addUserStep = new WizStep({
         name: 'addUserStep',
-        getValues: function() {
-            return {
+        getValues: {
                 firstName: $('firstName').value,
                 secondName: $('secondName').value
-            };
         },
         onEnter: function(p) {
             addUser.setStyle('display', 'block');
@@ -80,25 +78,19 @@ window.addEvent('load', function(){
 
     var confirmUserStep = new WizStep({
         name: 'confirmUser',
-        getValues: function() {
-            return {
-                confirm: $('confirm').checked
-            };
+        getValues: {
+            confirm: $('confirm').checked
         },
         onEnter: function(p) {
             confirmUser.setStyle('display', 'block');
         },
-        getNextStep: function() {
-            return 'congrats';
-        }
+        getNextStep: 'congrats'
     });
 
     var congratsStep = new WizStep({
         name: 'congrats',
-        getValues: function() {
-            return {
+        getValues: {
                 addAnother: $('addAnother').checked
-            };
         },
         onEnter: function(p) {
             congrats.setStyle('display', 'block');

@@ -213,8 +213,21 @@ test("getNextStep test", function() {
     w.start();
     equal(w._currentStep.stepName,'addUserStep', 'check that first step is used');
     w.next();
+    deepEqual(w.getAvailableMoves(), {
+        back: true,
+        next: true,
+        final: false
+    }, 'testing state in add email step in getNextStep test');
+
     equal(w.getCurrentStep().stepName, 'addEmailStep', 'check that email step is chosen using getNextStep as a string');
     w.next();
+
+    deepEqual(w.getAvailableMoves(), {
+        back: true,
+        next: false,
+        final: true
+    }, 'testing state in add email step in getNextStep test');
+
     deepEqual(w.getStorage(), {email: 'test@test.com'}, 'check that getValues works not just as function but also as an object');
     equal(w.getCurrentStep().stepName, 'congratsStep', 'getNextStep as a string works')
 });

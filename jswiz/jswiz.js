@@ -237,7 +237,14 @@ Wiz.prototype = {
     getAvailableMoves: function() {
         var next = back = false;
 
-        if (this._currentStep.getNextStep && this._currentStep.getNextStep()) {
+        var nextStep;
+        if (typeof this._currentStep.getNextStep == 'string') {
+            nextStep = this._currentStep.getNextStep;
+        } else if (typeof this._currentStep.getNextStep == 'function'){
+            nextStep = this._currentStep.getNextStep();
+        }
+
+        if (nextStep) {
             next = true;
         }
 
