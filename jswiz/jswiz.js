@@ -173,8 +173,15 @@ Wiz.prototype = {
         // pass result to the next step
         prevStep.beforeExit && prevStep.beforeExit();
 
+        var prevStepValues;
+        if (typeof prevStep.getValues == 'function') {
+            prevStepValues = prevStep.getValues();
+        } else {
+            prevStepValues = prevStep.getValues;
+        }
+
         // save result into storage
-        this.updateStorage(prevStep.getValues());
+        this.updateStorage(prevStepValues);
 
         // save history
         this._stepHistory.push(prevStep);
@@ -206,7 +213,11 @@ Wiz.prototype = {
         var nextStep;
 
         if (prevStep.getNextStep && !this.config.sequential) {
-            nextStep = this.getStepByName(prevStep.getNextStep());
+            if (typeof prevStep.getNextStep == 'string') {
+                nextStep = this.getStepByName(prevStep.getNextStep);
+            } else {
+                nextStep = this.getStepByName(prevStep.getNextStep());
+            }
             if (nextStep == undefined) {
                 throw new WizError(WizError.WIZ_NEXT_STEP_WAS_NOT_FOUND + '(step name: [' + prevStep.getNextStep() +
                     '] was not found in [' + prevStep.stepName +']');
@@ -219,7 +230,7 @@ Wiz.prototype = {
 
         this._currentStep = nextStep;
 
-        nextStep.enterStep(prevStep.getValues());
+        nextStep.enterStep(prevStepValues);
         return nextStep;
     },
 

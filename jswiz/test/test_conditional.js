@@ -183,6 +183,42 @@ test("Back test", function() {
     wiz.back();
 });
 
+test("getNextStep test", function() {
+    var w = new Wiz({name: 'testStateWiz'});
+
+    var addUserStep = new WizStep({
+        name: 'addUserStep',
+        getValues: function() {},
+        getNextStep: 'addEmailStep'
+    });
+
+    var addEmailStep = new WizStep({
+        name: 'addEmailStep',
+        getValues: {
+            email: 'test@test.com'
+        },
+        getNextStep: 'congratsStep'
+    });
+
+    var congratsStep = new WizStep({
+        name: 'congratsStep',
+        getValues: function() {},
+        final: true
+    });
+
+    w.addStep(addUserStep);
+    w.addStep(addEmailStep);
+    w.addStep(congratsStep);
+
+    w.start();
+    equal(w._currentStep.stepName,'addUserStep', 'check that first step is used');
+    w.next();
+    equal(w.getCurrentStep().stepName, 'addEmailStep', 'check that email step is chosen using getNextStep as a string');
+    w.next();
+    deepEqual(w.getStorage(), {email: 'test@test.com'}, 'check that getValues works not just as function but also as an object');
+    equal(w.getCurrentStep().stepName, 'congratsStep', 'getNextStep as a string works')
+});
+
 test("Testing state", function () {
     var w = new Wiz({name: 'testStateWiz'});
 
