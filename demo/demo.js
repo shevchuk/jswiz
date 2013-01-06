@@ -10,6 +10,7 @@ window.addEvent('load', function(){
             updateToolbar();
         },
         onComplete: function() {
+            var self = this;
             var completedScreen = $('completedScreen');
 
             completedScreen.setStyle('display', 'block');
@@ -17,11 +18,21 @@ window.addEvent('load', function(){
 
             var s = w.getStorage();
 
-            $('toolbar').set('html',
+            $('toolbar').setStyle('display', 'none');
+            $('result').set('html',
                 '<p>First name: ' + s.firstName + '</p>' +
                 '<p>Second name: ' + s.secondName + '</p>'
             );
-            console.log(w.getStorage())
+            console.log(w.getStorage());
+
+            $('startOver').addEvent('click', function() {
+                self.start();
+            });
+        },
+        onStart: function() {
+            $('result').empty();
+            $('toolbar').setStyle('display', 'block');
+            $('completedScreen').setStyle('display', 'none');
         }
     });
 
@@ -102,7 +113,6 @@ window.addEvent('load', function(){
     w.addStep(congratsStep);
 
     w.start();
-
 
     updateToolbar();
 });
