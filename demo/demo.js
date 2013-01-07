@@ -25,6 +25,10 @@ window.addEvent('load', function(){
             );
             console.log(w.getStorage());
 
+            if (w.getStorage().addAnother) {
+                self.start();
+            }
+
             $('startOver').addEvent('click', function() {
                 self.start();
             });
@@ -64,9 +68,11 @@ window.addEvent('load', function(){
 
     var addUserStep = new WizStep({
         name: 'addUserStep',
-        getValues: {
+        getValues: function() {
+            return {
                 firstName: $('firstName').value,
                 secondName: $('secondName').value
+            }
         },
         onEnter: function(p) {
             addUser.setStyle('display', 'block');
@@ -78,8 +84,10 @@ window.addEvent('load', function(){
 
     var confirmUserStep = new WizStep({
         name: 'confirmUser',
-        getValues: {
-            confirm: $('confirm').checked
+        getValues: function () {
+            return {
+                confirm: $('confirm').checked
+            }
         },
         onEnter: function(p) {
             confirmUser.setStyle('display', 'block');
@@ -89,8 +97,10 @@ window.addEvent('load', function(){
 
     var congratsStep = new WizStep({
         name: 'congrats',
-        getValues: {
+        getValues: function() {
+            return {
                 addAnother: $('addAnother').checked
+            }
         },
         onEnter: function(p) {
             congrats.setStyle('display', 'block');

@@ -218,9 +218,9 @@ test("getNextStep test", function() {
         next: true,
         final: false
     }, 'testing state in add email step in getNextStep test');
-
     equal(w.getCurrentStep().stepName, 'addEmailStep', 'check that email step is chosen using getNextStep as a string');
     w.next();
+    deepEqual(w.getStorage(), {email: 'test@test.com'}, 'check that getValues as object works')
 
     deepEqual(w.getAvailableMoves(), {
         back: true,

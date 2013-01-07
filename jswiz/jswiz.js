@@ -176,7 +176,7 @@ Wiz.prototype = {
         var prevStepValues;
         if (typeof prevStep.getValues == 'function') {
             prevStepValues = prevStep.getValues();
-        } else {
+        } else if (typeof prevStep.getValues == 'object'){
             prevStepValues = prevStep.getValues;
         }
 
@@ -215,7 +215,7 @@ Wiz.prototype = {
         if (prevStep.getNextStep && !this.config.sequential) {
             if (typeof prevStep.getNextStep == 'string') {
                 nextStep = this.getStepByName(prevStep.getNextStep);
-            } else {
+            } else if (typeof prevStep.getNextStep == 'function') {
                 nextStep = this.getStepByName(prevStep.getNextStep());
             }
             if (nextStep == undefined) {
@@ -317,7 +317,7 @@ WizError.prototype = {
 };
 
 WizError.WIZ_STEP_NAME = "name is mandatory, should be unique";
-WizError.WIZ_STEP_GET_VALUES = "getValues is mandatory, should be a function that returns an object with keys, values";
+WizError.WIZ_STEP_GET_VALUES = "getValues is mandatory, should be a function that returns an object with keys, values or a static object";
 WizError.WIZ_NO_STEPS = "no steps defined in this wizard: ";
 WizError.WIZ_STEP_NO_GET_NEXT_STEP = "getNextStep is not defined in step: ";
 WizError.WIZ_NEXT_STEP_WAS_NOT_FOUND = "Next step was not found. If this is the last step, you should set `final: true`";
