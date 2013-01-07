@@ -116,10 +116,10 @@ function testWiz() {
 
     test("Test", function () {
         equal(0, w._currentStepNumber, 'initial step');
-        equal(false, checkBeforeExit, 'initial check before exit value');
+        ok(!checkBeforeExit, 'initial check before exit value');
         deepEqual({}, w.getStorage(), 'Empty initial storage');
         w.next();
-        equal(true, checkBeforeExit, 'check before exit value');
+        ok(checkBeforeExit, 'check before exit value');
         deepEqual({name: 'hello'}, w.getStorage(), 'Checked storage value')
         notEqual('kjdf@jdkfs.com', email2AsInput, 'Check that there is no email2 yet');
         w.next();
@@ -141,10 +141,10 @@ function testWiz() {
 
         notEqual("function", typeof w.wizSteps[0].onEnter, 'check onEnter function absence');
         notEqual("function", typeof w.wizSteps[1].onEnter, 'check onEnter function absence');
-        equal("function", typeof w.wizSteps[2].onEnter, 'check onEnter function presence');
+        equal('function', typeof w.wizSteps[2].onEnter, 'check onEnter function presence');
 
 
-        equal(confirmAddCheck, true, 'initial add user confirm check');
+        ok(confirmAddCheck, 'initial add user confirm check');
         addUserWiz.start();
         equal(addUserWiz.getCurrentStep().stepName, 'addUserStep', 'check initial name');
         equal(confirmAddCheck, false, 'onEnter first screen add user confirm check');
@@ -157,7 +157,7 @@ function testWiz() {
         addUserWiz.next();
         addUserWiz.next(); /// next more than needed;
 
-        equal(confirmAddCheck, true, 'final add user confirm check');
+        ok(confirmAddCheck, 'final add user confirm check');
 
         deepEqual(addUserWiz.getStorage(), {
             firstName: "Ivan",
