@@ -52,7 +52,7 @@ passed between screens.
                                     confirmed: true}
 </pre>
 
-## Wiz
+### Usual conditional / dynamic wizard
 
 In real world, you need to mixin wizard step into your wizard form:
 
@@ -74,7 +74,7 @@ In real world, you need to mixin wizard step into your wizard form:
 
 </pre>
 
-## getValues & getNextStep
+#### getValues & getNextStep
 `getValues` can be a static object like `{param1: 'value1'}` but if you have a form you should return a function
 like mentioned above. This function call is deferred and not executed instantly, so correct values can be taken.
 
