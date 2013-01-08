@@ -124,9 +124,7 @@ Back function restores the storage state:
         getValues: function() {
             return {email: 'ivan@sidorov.ru'};
         },
-        getNextStep: function() {
-            return 'confirmUserStep';
-        }
+        getNextStep: 'confirmUserStep'
     });
     addUserStep.extend(form);
 
@@ -135,9 +133,7 @@ Back function restores the storage state:
         getValues: function() {
             return {confirmed: true};
         },
-        getNextStep: function() {
-            return 'doneStep';
-        }
+        getNextStep: 'doneStep'
     });
 
     ...
