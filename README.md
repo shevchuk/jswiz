@@ -81,7 +81,7 @@ like mentioned above. This function call is deferred and not executed instantly,
 `getNextStep` can be a string too but this case is more common. If your step can go only in one way, it is the proper
 way to set it as a string.
 
-*wrong*
+*not good*
 <pre>
 getNextStep: function() {
     return 'confirmUserStep';
