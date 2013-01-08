@@ -130,9 +130,7 @@ Back function restores the storage state:
 
     var confirmUserStep = new WizStep({
         name: 'confirmUserStep',
-        getValues: function() {
-            return {confirmed: true};
-        },
+        getValues: {confirmed: true},
         getNextStep: 'doneStep'
     });
 
