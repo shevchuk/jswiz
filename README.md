@@ -1,10 +1,12 @@
-# Synopsis
+# Introduction
+### Synopsis
 **JsWiz** is a leightweight facility for building a skeleton for a wizard component in JavaScript
 It may help you do build flexible custom wizard. It doesn't contain any UI or dependencies.
 
 This library solves a problem of building a wizard with dynamic flow and manipulating with data
 passed between screens. It doesn't depend on any js framework.
 
+## Wizard construction
 ### Simple sequential wizard
 
 <pre>
@@ -74,6 +76,7 @@ In real world, you need to mixin wizard step into your wizard form:
 
 </pre>
 
+### More on details
 #### getValues & getNextStep
 `getValues` can be a static object like `{param1: 'value1'}` but if you have a form you should return a function
 like mentioned above. This function call is deferred and not executed instantly, so correct values can be taken.
@@ -93,7 +96,7 @@ getNextStep: function() {
 getNextStep: 'confirmUserStep'
 </pre>
 
-### Sequential and conditional wizards
+#### Sequential and conditional wizards `sequential: true`
 
 If you have a linear wizard you should create it like this `var wiz = new Wiz({name: 'wizName', sequential: true});`
 Usually wizards are not that simple so you need to provide information about next step which can vary:
@@ -114,7 +117,7 @@ var confirmUserStep = new WizStep({
 });
 </pre>
 
-### How back works and what happens to storage
+#### How back works and what happens to storage
 
 Back function restores the storage state:
 <pre>
@@ -161,5 +164,20 @@ to your toolbar.
         $('back').setStyle('display', moves.back?'block':'none');
         $('complete').setStyle('display', moves.final?'block':'none');
     };
+</pre>
+
+Wizard step object has a `addUserStep.extend` function which can be used for extending existing form object:
+
+<pre>
+    ...
+    var addUserStep = new WizStep({
+        name: 'addUserStep',
+        getValues: function() {
+            return {email: 'ivan@sidorov.ru'};
+        },
+        getNextStep: 'confirmUserStep'
+    });
+    addUserStep.extend(form);
+    ...
 </pre>
 
