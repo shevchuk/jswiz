@@ -5,7 +5,7 @@ window.addEvent('load', function(){
 
     var w = new Wiz({
         name: 'wiz',
-        onStepChange: function() {
+        beforeStepChange: function() {
             hideAll();
             updateToolbar();
         },

@@ -12,6 +12,7 @@ function Wiz(config)
     this.onStart = this.config.onStart;
     this.onComplete = this.config.onComplete;
     this.onStepChange = this.config.onStepChange;
+    this.beforeStepChange = this.config.beforeStepChange;
     this.onStorageUpdate = this.config.onStorageUpdate;
 
     this.wizSteps = [];
@@ -114,6 +115,7 @@ Wiz.prototype = {
     },
 
     back: function() {
+        this.beforeStepChange && this.beforeStepChange();
         this._currentStep = this.getPreviousStep();
         this._currentStep.enterStep();
 
@@ -208,7 +210,7 @@ Wiz.prototype = {
         }
 
         // go to next step
-        self.onStepChange && self.onStepChange();
+        this.beforeStepChange && this.beforeStepChange();
 
         var nextStep;
 
@@ -231,6 +233,7 @@ Wiz.prototype = {
         this._currentStep = nextStep;
 
         nextStep.enterStep(prevStepValues);
+        self.onStepChange && self.onStepChange();
         return nextStep;
     },
 

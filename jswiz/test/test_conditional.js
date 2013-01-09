@@ -79,6 +79,54 @@ test("Conditional wizard test", function () {
     equal(wiz.getCurrentStep().stepName, 'confirmUserStep', 'check confirm step after wizard is complete');
 });
 
+test("beforeStepChange handler test", function () {
+    var toggle = false;
+    var w = new Wiz({
+        name: 'wiz',
+        beforeStepChange: function() {
+            ok(!toggle, 'beforeStepChange is called earlier than step\'s onEnter');
+        },
+        onStepChange: function() {
+            ok(toggle, 'onStepChange is called after step\'s onEnter');
+        }
+    });
+
+    var addUserStep = new WizStep({
+        name: 'addUserStep',
+        getValues: function() {
+            return {
+                firstName: 'Ivan',
+                secondName: 'Ivanov'
+            }
+        },
+        onEnter: function(p) {
+
+        },
+        getNextStep: function() {
+            return 'confirmUser';
+        }
+    });
+
+    var confirmUserStep = new WizStep({
+        name: 'confirmUser',
+        getValues: function () {
+        },
+        onEnter: function(p) {
+            toggle = !toggle;
+        },
+        final: true
+    });
+
+    w.addStep(addUserStep);
+    w.addStep(confirmUserStep);
+    ok(!toggle, 'initial toggle test check');
+
+    w.start();
+    ok(!toggle, 'toggle was not changed after start and first step enter');
+
+    w.next();
+});
+
 test("State change handler test", function () {
     var toggle = false;
     var storageUpdatedToggle = false;
@@ -102,6 +150,8 @@ test("State change handler test", function () {
         getValues: function() {},
         getNextStep: function() {
             return 'addEmailStep';
+        },
+        onEnter: function() {
         }
     });
 
@@ -110,6 +160,9 @@ test("State change handler test", function () {
         getValues: function() {},
         getNextStep: function() {
             return 'congratsStep';
+        },
+        onEnter: function() {
+            ok(!toggle, 'check that toggle is still true (wizard onStepChange has not been invoked)');
         }
     });
 
