@@ -3,7 +3,7 @@
 It may help you do build flexible custom wizard. It doesn't contain any UI or dependencies.
 
 This library solves a problem of building a wizard with dynamic flow and manipulating with data
-passed between screens.
+passed between screens. It doesn't depend on any js framework.
 
 ### Simple sequential wizard
 
@@ -145,5 +145,21 @@ Back function restores the storage state:
     wiz.back();
     wiz.getStorage() --> {email: 'ivan@sidorov.ru'}
 
+</pre>
+
+### Integrating with form
+
+JsWiz has a method `getAvailableMoves()` which returns a state of the wizard
+It returns object with boolean `next, back, final` properties which can be bound
+to your toolbar.
+
+<pre>
+    function updateToolbar() {
+        var moves = w.getAvailableMoves();
+
+        $('next').setStyle('display', moves.next?'block':'none');
+        $('back').setStyle('display', moves.back?'block':'none');
+        $('complete').setStyle('display', moves.final?'block':'none');
+    };
 </pre>
 
