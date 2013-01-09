@@ -181,3 +181,14 @@ Wizard step object has a `addUserStep.extend` function which can be used for ext
     ...
 </pre>
 
+### Wizard and step handlers
+#### Wizard
+onStart
+beforeStepChange
+onStepChange
+onComplete
+TODO
+#### Wizard step
+onEnter
+beforeExit
+TODO
