@@ -185,7 +185,7 @@ Wizard step object has a `addUserStep.extend` function which can be used for ext
 #### Wizard
 * `onStart` - the first callback in the wizard, called before 1st step's `onEnter`
 * `beforeStepChange` - called every time step is changed, not called for the first step, called before next step's `onEnter`
-* `onStepChange` - onStepChange is called after step\'s `onEnter`
+* `onStepChange` - onStepChange is called after step's `onEnter` and after `beforeStepChange`
 * `onComplete` - called when wizard is completed
 
 #### Wizard step
