@@ -183,12 +183,11 @@ Wizard step object has a `addUserStep.extend` function which can be used for ext
 
 ### Wizard and step handlers
 #### Wizard
-onStart
-beforeStepChange
-onStepChange
-onComplete
-TODO
+* `onStart` - the first callback in the wizard, called before 1st step's `onEnter`
+* `beforeStepChange` - called every time step is changed, not called for the first step, called before next step's `onEnter`
+* `onStepChange` - onStepChange is called after step\'s `onEnter`
+* `onComplete` - called when wizard is completed
+
 #### Wizard step
-onEnter
-beforeExit
-TODO
+* `onEnter` - called every time step is entered, works for every step including the 1st
+* `beforeExit` - called before leaving this step, called before `onStepChange` and `beforeStepChange`

@@ -277,6 +277,56 @@ test("onStart check", function() {
 
 });
 
+test("beforeExit check", function() {
+    var firstStepExited = false;
+    var w = new Wiz({
+        name: 'testStateWiz',
+        onStart: function() {
+        },
+        beforeStepChange: function() {
+            ok(firstStepExited, 'checked that beforeExit callback is called first, then beforeStepChange');
+            firstStepExited = false;
+        },
+        onStepChange: function() {
+            ok(!firstStepExited, 'checked that beforeExit callback is called first, then beforeStepChange, then onStepChange');
+        }
+    });
+
+    var addUserStep = new WizStep({
+        name: 'addUserStep',
+        getValues: function() {},
+        onEnter: function() {
+        },
+        beforeExit: function() {
+            ok(!firstStepExited, 'checked that beforeExit callback is called first');
+            firstStepExited = true;
+        },
+        getNextStep: 'addEmailStep'
+    });
+
+    var addEmailStep = new WizStep({
+        name: 'addEmailStep',
+        getValues: {
+            email: 'test@test.com'
+        },
+        getNextStep: 'congratsStep'
+    });
+
+    var congratsStep = new WizStep({
+        name: 'congratsStep',
+        getValues: function() {},
+        final: true
+    });
+    w.addStep(addUserStep);
+    w.addStep(addEmailStep);
+
+    w.addStep(congratsStep);
+    w.start();
+    w.next();
+
+
+});
+
 test("getNextStep test", function() {
     var w = new Wiz({name: 'testStateWiz'});
 
