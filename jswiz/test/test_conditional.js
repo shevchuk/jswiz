@@ -1,6 +1,6 @@
 module("conditional wizard");
-
 var dataSent = false;
+
 var wiz = new Wiz({
     name: 'condWizard',
     onComplete: function(data) {
@@ -14,7 +14,6 @@ var form = {
         return 'ivan@sidorov.ru'
     }
 };
-
 var addUserStep = new WizStep({
     name: 'addUserStep',
     getValues: function() {
@@ -24,9 +23,10 @@ var addUserStep = new WizStep({
         return 'confirmUserStep';
     }
 });
-addUserStep.extend(form);
 
+addUserStep.extend(form);
 var confirmed = true;
+
 var confirmUserStep = new WizStep({
     name: 'confirmUserStep',
     getValues: function() {
@@ -51,12 +51,12 @@ var doneStep = new WizStep({
 
     }
 });
-
 wiz.addStep(form);
 wiz.addStep(doneStep);
 wiz.addStep(confirmUserStep);
-wiz.start();
 
+
+wiz.start();
 
 test("Conditional wizard test", function () {
     wiz.start();
@@ -234,6 +234,47 @@ test("Back test", function() {
     wiz.back();
     wiz.back();
     wiz.back();
+});
+test("onStart check", function() {
+    var started = false;
+
+    var w = new Wiz({
+        name: 'testStateWiz',
+        onStart: function() {
+            ok(!started, 'onStart is called earlier than onEnter');
+            started = true;
+        }
+    });
+
+    var addUserStep = new WizStep({
+        name: 'addUserStep',
+        getValues: function() {},
+        onEnter: function() {
+            ok(started, 'onEnter works after onStart');
+        },
+        getNextStep: 'addEmailStep'
+    });
+
+    var addEmailStep = new WizStep({
+        name: 'addEmailStep',
+        getValues: {
+            email: 'test@test.com'
+        },
+        getNextStep: 'congratsStep'
+    });
+
+    var congratsStep = new WizStep({
+        name: 'congratsStep',
+        getValues: function() {},
+        final: true
+    });
+    w.addStep(addUserStep);
+    w.addStep(addEmailStep);
+
+    w.addStep(congratsStep);
+    w.start();
+
+
 });
 
 test("getNextStep test", function() {

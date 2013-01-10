@@ -108,10 +108,10 @@ Wiz.prototype = {
         // store current step as prev also
         self._stepHistory.push(currentStep);
 
+        self.onStart && self.onStart();
+
         self._currentStep = currentStep;
         currentStep.enterStep();
-
-        self.onStart && self.onStart();
     },
 
     back: function() {
