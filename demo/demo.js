@@ -13,6 +13,9 @@ window.addEvent('domready', function(){
     var congrats = $('congrats');
     var completedScreen = $('completedScreen');
 
+    /**
+     * Wizard creation
+     */
     var w = new Wiz({
         name: 'wiz',
         beforeStepChange: function() {
@@ -44,37 +47,15 @@ window.addEvent('domready', function(){
         },
         onStart: function() {
             $('result').empty();
+
             $('toolbar').show();
             completedScreen.hide();
         }
     });
 
-    $('next').onclick = function () {
-        w.next();
-    }
-
-    $('back').onclick = function () {
-        w.back();
-    }
-
-    $('complete').onclick = function () {
-        w.next();
-    }
-
-    function updateToolbar() {
-        var moves = w.getAvailableMoves();
-
-        $('next').setStyle('display', moves.next?'block':'none');
-        $('back').setStyle('display', moves.back?'block':'none');
-        $('complete').setStyle('display', moves.final?'block':'none');
-    };
-
-    function hideAll() {
-        addUser.hide();
-        confirmUser.hide();
-        congrats.hide();
-    };
-
+    /**
+     * Adding 3 steps
+     */
     var addUserStep = new WizStep({
         name: 'addUserStep',
         getValues: function() {
@@ -85,6 +66,7 @@ window.addEvent('domready', function(){
         },
         onEnter: function(p) {
             addUser.show();
+            updateToolbar();
         },
         getNextStep: function() {
             return 'confirmUser';
@@ -117,17 +99,44 @@ window.addEvent('domready', function(){
         final: true
     });
 
-    addUserStep.extend(addUser);
-    confirmUserStep.extend(confirmUser);
-    congratsStep.extend(congrats);
-
-    hideAll();
-
+    // adding these steps
     w.addStep(addUserStep);
     w.addStep(confirmUserStep);
     w.addStep(congratsStep);
 
-    w.start();
 
-    updateToolbar();
+    /*
+     * Navigation toolbar
+     */
+    $('next').onclick = function () {
+        w.next();
+    }
+
+    $('back').onclick = function () {
+        w.back();
+    }
+
+    $('complete').onclick = function () {
+        w.next();
+    }
+
+    function updateToolbar() {
+        var moves = w.getAvailableMoves();
+
+        $('next').setStyle('display', moves.next?'block':'none');
+        $('back').setStyle('display', moves.back?'block':'none');
+        $('complete').setStyle('display', moves.final?'block':'none');
+    };
+
+
+
+    function hideAll() {
+        addUser.hide();
+        confirmUser.hide();
+        congrats.hide();
+    };
+
+    // start wizard
+    hideAll();
+    w.start();
 });
