@@ -136,7 +136,9 @@ window.addEvent('domready', function(){
         congrats.hide();
     };
 
-    // start wizard
+    // hide all screen
     hideAll();
+
+    // start wizard
     w.start();
 });
