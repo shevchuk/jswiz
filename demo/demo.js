@@ -1,7 +1,17 @@
-window.addEvent('load', function(){
+window.addEvent('domready', function(){
+    Element.implement({
+        show: function(e) {
+            this.setStyle('display', 'block');
+        },
+        hide: function(e) {
+            this.setStyle('display', 'none');
+        }
+    });
+
     var addUser = $('addUser');
     var confirmUser = $('confirmUser');
     var congrats = $('congrats');
+    var completedScreen = $('completedScreen');
 
     var w = new Wiz({
         name: 'wiz',
@@ -11,14 +21,13 @@ window.addEvent('load', function(){
         },
         onComplete: function() {
             var self = this;
-            var completedScreen = $('completedScreen');
 
-            completedScreen.setStyle('display', 'block');
-            congrats.setStyle('display', 'none');
+            completedScreen.show();
+            congrats.hide();
 
             var s = w.getStorage();
 
-            $('toolbar').setStyle('display', 'none');
+            $('toolbar').hide();
             $('result').set('html',
                 '<p>First name: ' + s.firstName + '</p>' +
                 '<p>Second name: ' + s.secondName + '</p>'
@@ -35,8 +44,8 @@ window.addEvent('load', function(){
         },
         onStart: function() {
             $('result').empty();
-            $('toolbar').setStyle('display', 'block');
-            $('completedScreen').setStyle('display', 'none');
+            $('toolbar').show();
+            completedScreen.hide();
         }
     });
 
@@ -61,9 +70,9 @@ window.addEvent('load', function(){
     };
 
     function hideAll() {
-        addUser.setStyle('display', 'none');
-        confirmUser.setStyle('display', 'none');
-        congrats.setStyle('display', 'none');
+        addUser.hide();
+        confirmUser.hide();
+        congrats.hide();
     };
 
     var addUserStep = new WizStep({
@@ -75,7 +84,7 @@ window.addEvent('load', function(){
             }
         },
         onEnter: function(p) {
-            addUser.setStyle('display', 'block');
+            addUser.show();
         },
         getNextStep: function() {
             return 'confirmUser';
@@ -90,7 +99,7 @@ window.addEvent('load', function(){
             }
         },
         onEnter: function(p) {
-            confirmUser.setStyle('display', 'block');
+            confirmUser.show();
         },
         getNextStep: 'congrats'
     });
@@ -103,10 +112,14 @@ window.addEvent('load', function(){
             }
         },
         onEnter: function(p) {
-            congrats.setStyle('display', 'block');
+            congrats.show();
         },
         final: true
     });
+
+    addUserStep.extend(addUser);
+    confirmUserStep.extend(confirmUser);
+    congratsStep.extend(congrats);
 
     hideAll();
 
