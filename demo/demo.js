@@ -25,17 +25,18 @@ window.addEvent('domready', function(){
         onComplete: function() {
             var self = this;
 
-            completedScreen.show();
             congrats.hide();
+            $('toolbar').hide();
+
+            completedScreen.show();
 
             var s = w.getStorage();
-
-            $('toolbar').hide();
             $('result').set('html',
                 '<p>First name: ' + s.firstName + '</p>' +
                 '<p>Second name: ' + s.secondName + '</p>'
             );
-            console.log(w.getStorage());
+
+            window.console && console.log(w.getStorage());
 
             if (w.getStorage().addAnother) {
                 self.start();
