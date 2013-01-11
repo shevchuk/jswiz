@@ -69,9 +69,7 @@ window.addEvent('domready', function(){
             addUser.show();
             updateToolbar();
         },
-        getNextStep: function() {
-            return 'confirmUser';
-        }
+        getNextStep: 'confirmUser'
     });
 
     var confirmUserStep = new WizStep({
