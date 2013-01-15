@@ -190,4 +190,6 @@ Wizard step object has a `addUserStep.extend` function which can be used for ext
 
 #### Wizard step
 * `onEnter` - called every time step is entered, works for every step including the 1st
-* `beforeExit` - called before leaving this step, called before `onStepChange` and `beforeStepChange`
+* `beforeExit` - called before leaving this step, called before `onStepChange` and `beforeStepChange`,
+the other thing about beforeExit is that it can be used to validate a form. If this callback returns `false` then
+step is not changed so you can show user information before he jumps to the next step.

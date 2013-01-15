@@ -235,6 +235,7 @@ test("Back test", function() {
     wiz.back();
     wiz.back();
 });
+
 test("onStart check", function() {
     var started = false;
 
@@ -278,17 +279,17 @@ test("onStart check", function() {
 });
 
 test("beforeExit check", function() {
-    var firstStepExited = false;
+    var counter = 0;
     var w = new Wiz({
         name: 'testStateWiz',
         onStart: function() {
         },
         beforeStepChange: function() {
-            ok(firstStepExited, 'checked that beforeExit callback is called first, then beforeStepChange');
-            firstStepExited = false;
+            equal(counter, 1, 'checked that beforeExit callback is called first, then beforeStepChange');
+            counter ++;
         },
         onStepChange: function() {
-            ok(!firstStepExited, 'checked that beforeExit callback is called first, then beforeStepChange, then onStepChange');
+            equal(counter, 2, 'checked that beforeExit callback is called first, then beforeStepChange, then onStepChange');
         }
     });
 
@@ -298,8 +299,8 @@ test("beforeExit check", function() {
         onEnter: function() {
         },
         beforeExit: function() {
-            ok(!firstStepExited, 'checked that beforeExit callback is called first');
-            firstStepExited = true;
+            equal(counter, 0, 'checked that beforeExit callback is called first');
+            counter ++;
         },
         getNextStep: 'addEmailStep'
     });
@@ -317,14 +318,60 @@ test("beforeExit check", function() {
         getValues: function() {},
         final: true
     });
+
     w.addStep(addUserStep);
     w.addStep(addEmailStep);
-
     w.addStep(congratsStep);
+
     w.start();
     w.next();
+});
 
+test("beforeExit check return value", function() {
 
+    var w = new Wiz({
+        name: 'testStateWiz',
+        onStart: function() {
+        },
+        beforeStepChange: function() {
+        },
+        onStepChange: function() {
+        }
+    });
+
+    var addUserStep = new WizStep({
+        name: 'addUserStep',
+        getValues: function() {},
+        onEnter: function() {
+        },
+        beforeExit: function() {
+            return false;
+        },
+        getNextStep: 'addEmailStep'
+    });
+
+    var addEmailStep = new WizStep({
+        name: 'addEmailStep',
+        getValues: {
+            email: 'test@test.com'
+        },
+        getNextStep: 'congratsStep'
+    });
+
+    var congratsStep = new WizStep({
+        name: 'congratsStep',
+        getValues: function() {},
+        final: true
+    });
+
+    w.addStep(addUserStep);
+    w.addStep(addEmailStep);
+    w.addStep(congratsStep);
+
+    w.start();
+    equal(w._currentStep.stepName,'addUserStep', 'check initial step');
+    w.next();
+    equal(w._currentStep.stepName,'addUserStep', 'check that first step is not changed because beforeExit returns false');
 });
 
 test("getNextStep test", function() {

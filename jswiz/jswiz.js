@@ -172,8 +172,16 @@ Wiz.prototype = {
         // store current step as previous
         var prevStep = this._currentStep;
 
-        // pass result to the next step
-        prevStep.beforeExit && prevStep.beforeExit();
+        /**
+         * pass result to the next step
+         */
+
+        // check that we can go further, (step is valid)
+        var valid = prevStep.beforeExit && prevStep.beforeExit();
+
+        if (valid == false) {
+            return;
+        }
 
         var prevStepValues;
         if (typeof prevStep.getValues == 'function') {
