@@ -1,6 +1,6 @@
 /**
  * @author: Mikhail Shevchuk <mikhail.shevchuk@gmail.com>
- * @description: JsWiz - lightweight library for making wizards
+ * @description: JsWiz - lightweight library for making wizards (FSM like)
  */
 
 function Wiz(config)
